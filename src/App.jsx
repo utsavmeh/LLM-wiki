@@ -392,7 +392,7 @@ const ingestionPlan = [
   },
   {
     label: "New entity",
-    items: ["[[Steph Ango]]"],
+    items: ["[[Utsav Mehrotra]]"],
   },
   {
     label: "Index update",
@@ -414,7 +414,7 @@ const graphNodes = [
   "File Over App",
   "LLM Wiki Pattern",
   "Andrej Karpathy",
-  "Steph Ango",
+  "Utsav Mehrotra",
   "Obsidian",
   "Local-First Software",
 ];
@@ -1037,7 +1037,7 @@ function IngestionWalkthrough() {
             </p>
             <CodeBlock>{`---
 title: File over app
-author: Steph Ango
+author: Utsav Mehrotra
 source-url: https://example.com/file-over-app
 captured-date: 2026-05-01
 tags: [philosophy, knowledge-management, obsidian]
@@ -1293,6 +1293,132 @@ git checkout HEAD~1 -- wiki/concepts/X.md`}</CodeBlock>
   );
 }
 
+function AutomationTips() {
+  return (
+    <section id="automation" className="plain-section">
+      <div className="section-heading">
+        <p className="section-kicker">Advanced Automation</p>
+        <h2>Make Claude automatically check your wiki</h2>
+        <p>
+          By default, Claude won't automatically search your wiki. Here's how to make it more proactive about using your existing knowledge.
+        </p>
+      </div>
+
+      <div className="content-grid single-col">
+        <article className="callout">
+          <h3>What are Hooks?</h3>
+          <p>
+            <strong>Hooks are automatic triggers</strong> that make Claude do specific actions at certain moments (like when you start a session or make a commit).
+          </p>
+          <p><strong>Think of hooks like:</strong></p>
+          <ul>
+            <li><strong>A doorbell</strong> - When you arrive (session-start), Claude automatically greets you with your wiki summary</li>
+            <li><strong>A reminder alarm</strong> - When you leave (session-end), Claude reminds you to save important conversations</li>
+            <li><strong>A safety check</strong> - Before editing wiki files, Claude warns you about breaking links</li>
+          </ul>
+          <p>
+            <strong>Benefits:</strong> Instead of remembering to manually tell Claude "check my wiki" every time, hooks make it happen automatically. This saves time and ensures Claude always has context about your existing knowledge.
+          </p>
+        </article>
+      </div>
+
+      <div className="content-grid two-col">
+        <article className="setup-card">
+          <h3>Enhanced CLAUDE.md Rules</h3>
+          <p>
+            Add these rules to your <code>CLAUDE.md</code> to make Claude automatically check the wiki before answering questions:
+          </p>
+          <CodeBlock>{`## When to check the wiki
+- Before answering questions about technical topics, search wiki/ first
+- When I mention wanting to learn something new, check if we already have notes
+- If I ask about past decisions, look in dev/adr/ folder
+- When discussing projects, search for related concepts and entities`}</CodeBlock>
+        </article>
+
+        <article className="setup-card">
+          <h3>Session Hooks (Advanced)</h3>
+          <p>
+            Set up Claude Code hooks to automatically load wiki context when you start a session. Follow these steps:
+          </p>
+
+          <div style={{marginBottom: '15px'}}>
+            <h4>Step 1: Open Claude Code Settings</h4>
+            <CodeBlock>{`# In Claude Code, run:
+/update-config
+
+# Or manually edit the settings file:
+# ~/.claude/settings.json (Mac/Linux)
+# %USERPROFILE%\\.claude\\settings.json (Windows)`}</CodeBlock>
+          </div>
+
+          <div style={{marginBottom: '15px'}}>
+            <h4>Step 2: Add Session Hook</h4>
+            <p>Add or update the hooks section in your settings.json:</p>
+            <CodeBlock>{`{
+  "hooks": {
+    "session-start": "Read wiki/index.md to understand available knowledge, then briefly summarize what topics I have in my knowledge base."
+  }
+}`}</CodeBlock>
+          </div>
+
+          <div>
+            <h4>Step 3: Test the Hook</h4>
+            <CodeBlock>{`# Start a new Claude Code session in your vault
+cd ~/vault
+claude-code
+
+# You should see Claude automatically read your wiki and say something like:
+# "I can see your knowledge base contains concepts about X, Y, Z..."`}</CodeBlock>
+          </div>
+        </article>
+      </div>
+
+      <div className="content-grid single-col">
+        <article className="setup-card wide">
+          <h3>Additional Useful Hooks</h3>
+          <p>Here are more hooks you can add to enhance your LLM-Wiki workflow:</p>
+
+          <CodeBlock>{`{
+  "hooks": {
+    "session-start": "Read wiki/index.md to understand available knowledge",
+    "session-end": "If we created or updated any significant knowledge during this session, suggest running /wiki-ingest on our conversation",
+    "before-edit": "If editing files in wiki/, remind me to check if this might break any existing cross-links",
+    "after-commit": "Briefly summarize what knowledge was added or changed in this commit"
+  }
+}`}</CodeBlock>
+
+          <div style={{marginTop: '10px'}}>
+            <p><strong>Hook Explanations:</strong></p>
+            <ul>
+              <li><strong>session-start:</strong> Auto-loads wiki context</li>
+              <li><strong>session-end:</strong> Suggests preserving valuable conversations</li>
+              <li><strong>before-edit:</strong> Prevents accidentally breaking wiki links</li>
+              <li><strong>after-commit:</strong> Helps track knowledge evolution</li>
+            </ul>
+          </div>
+        </article>
+
+        <article className="callout">
+          <h3>Best Practice Workflow</h3>
+          <p><strong>Hybrid approach works best:</strong></p>
+          <ul>
+            <li><strong>Automatic:</strong> Claude starts sessions knowing your wiki exists (via CLAUDE.md)</li>
+            <li><strong>Manual:</strong> You explicitly use <code>/wiki-query</code> when you want specific knowledge</li>
+            <li><strong>Contextual:</strong> You remind Claude to check wiki when starting new topics</li>
+          </ul>
+          <p><strong>Example conversation flow:</strong></p>
+          <div style={{marginLeft: '20px', fontFamily: 'monospace', fontSize: '0.9em', background: '#f5f5f5', padding: '10px', borderRadius: '4px'}}>
+            <p><strong>You:</strong> "I want to build a payment system"</p>
+            <p><strong>Claude:</strong> "Let me check your wiki first for any existing knowledge..."</p>
+            <p><em>[Claude searches and finds your payment service docs]</em></p>
+            <p><strong>Claude:</strong> "I see you already have notes about PCI compliance and processor routing. Based on that..."</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 function EvolutionClosing() {
   return (
     <section id="evolution" className="plain-section evolution-section">
@@ -1345,6 +1471,7 @@ export default function App() {
         <IngestionWalkthrough />
         <DailyNotes />
         <SecurityGovernance />
+        <AutomationTips />
         <EvolutionClosing />
       </main>
     </>
